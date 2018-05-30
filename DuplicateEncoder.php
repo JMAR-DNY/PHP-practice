@@ -51,3 +51,17 @@ function duplicate_encode1($word){
   }  
   return $str;      
 }
+
+function duplicate_encode2(string $word) : string
+{
+    $splittedWord = str_split(strtolower($word));
+    $countMap = array_count_values($splittedWord);
+
+    $finalString = '';
+
+    foreach ($splittedWord as $letter) {
+        ($countMap[$letter] === 1) ? $finalString .= '(' : $finalString .= ')';
+    }   
+
+    return $finalString;
+}
