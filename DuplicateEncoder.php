@@ -42,3 +42,12 @@ $test4 .= $temp;
 return $test4;
   
 }
+
+function duplicate_encode1($word){
+  $word = str_split(strtolower($word));
+  $str = "";
+  foreach($word as $key){
+    (count(array_keys($word,$key))>1) ? $str .= ")" : $str .= "(";
+  }  
+  return $str;      
+}
