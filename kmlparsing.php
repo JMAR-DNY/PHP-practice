@@ -70,43 +70,7 @@ function Connect(){
             $sql->bindParam(':USzipCode', $zip);
             $sql->bindParam(':USzipCoords', $coords);
             $sql->execute();
-
-
-
         }
-
-
-/*
-
-        $stmt = $conn->prepare("INSERT INTO MyGuests (firstname, lastname, email)
-        VALUES (:firstname, :lastname, :email)");
-        $stmt->bindParam(':firstname', $firstname);
-        $stmt->bindParam(':lastname', $lastname);
-        $stmt->bindParam(':email', $email);
-    
-        // insert a row
-        $firstname = "John";
-        $lastname = "Doe";
-        $email = "john@example.com";
-        $stmt->execute();
-
-*/
-
-
-
-
-//END HELPER FUNCTIONS////////////////////////////////////////
-
-//SQL
-/*
-$name = 'dudeman';
-$message = 'howdy';
-
-$sql = "INSERT INTO mytable(name, message, created) VALUES ({$name},{$message}, NOW())";
-$handler->query($sql);
-*/
-//need to select right table
-//END SQL
 
 
 
@@ -120,56 +84,31 @@ set_time_limit(0);
 $conn = Connect();
 
 //XML STUFF//////////////////////////////////////////
-//$xml = simplexml_load_file('cb_2017_us_zcta510_500k.kml') or die("Error: Cannot create object");
-$xml = simplexml_load_file('test.kml') or die("Error: Cannot create object");
+$xml = simplexml_load_file('cb_2017_us_zcta510_500k.kml') or die("Error: Cannot create object");
+//$xml = simplexml_load_file('test.kml') or die("Error: Cannot create object");
 
 $childs = $xml->Document->Folder->children();
 foreach ($childs as $child)
 {
 
-    //$tempZip = $child->ExtendedData->SchemaData->SimpleData[0];
-    //$tempCoords =  $child->Polygon->outerBoundaryIs->LinearRing->coordinates;
-    
-    //echo '<pre>' . var_export($child, true) . '</pre>';
-    echo $child->ExtendedData->SchemaData->SimpleData[0] .'<br>';
+    //sets the zip code
+    $tempZip = $child->ExtendedData->SchemaData->SimpleData[0];
+
+    //tests for multi-spacial-geometry
     if ($child->MultiGeometry){
-        $i = 0;
+        $i = 0;//iterative looping foreach polygon, reset to 0 for each zip
         foreach($child->MultiGeometry->Polygon as $multi){
-            echo $child->MultiGeometry->Polygon[$i]->outerBoundaryIs->LinearRing->coordinates .'<br>'.'<br>';
+            $tempCoords = $child->MultiGeometry->Polygon[$i]->outerBoundaryIs->LinearRing->coordinates;
+            insert_into_USZipCodeData($conn, $tempZip, $tempCoords);
             $i++;
         } 
-        //echo $child->MultiGeometry->Polygon[0]->outerBoundaryIs->LinearRing->coordinates .'<br>';
     }
-    else{
-        echo  $child->Polygon->outerBoundaryIs->LinearRing->coordinates .'<br>';
+    else{//sets coordinates if theres only one set 
+        $tempCoords =  $child->Polygon->outerBoundaryIs->LinearRing->coordinates;
+        insert_into_USZipCodeData($conn, $tempZip, $tempCoords);
     }
-
-    //echo $child->ExtendedData->SchemaData->SimpleData[0] .'<br>';
-    //echo  $child->Polygon->outerBoundaryIs->LinearRing->coordinates .'<br>';
-
-
-    //insert_into_USZipCodeData($conn, $tempZip, $tempCoords);
-
 
 }
 
 //END XML STUFF///////////////////////////////////
 $conn = NULL;
-
-//$xml=simplexml_load_file("books.xml") or die("Error: Cannot create object");
-/*
-foreach($xml->children() as $books) {
-    echo $books->simpledata . "<br>";
-} 
-
-*/
-
-/*
-//$xml=simplexml_load_file("books.xml") or die("Error: Cannot create object");
-foreach($xml->children() as $books) {
-    echo $books->SimpleData['name'];
-    echo "<br>";
-} 
-*/
-
-//SimpleData
