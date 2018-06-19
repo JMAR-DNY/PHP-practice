@@ -51,8 +51,11 @@ function Connect(){
 
         //sql to create table
             $sql = "CREATE TABLE USZipCodeData (
+            USzipCodeID INT NOT NULL AUTO_INCREMENT,
             USzipCode TEXT,
-            USzipCoords LONGTEXT
+            USzipCoords LONGTEXT,
+            USzipHasMulti bit,
+            PRIMARY KEY (USzipCodeID)
             )";
 
         create_table($sql, $conn);    
@@ -117,16 +120,37 @@ set_time_limit(0);
 $conn = Connect();
 
 //XML STUFF//////////////////////////////////////////
+//$xml = simplexml_load_file('cb_2017_us_zcta510_500k.kml') or die("Error: Cannot create object");
 $xml = simplexml_load_file('test.kml') or die("Error: Cannot create object");
 
 $childs = $xml->Document->Folder->children();
 foreach ($childs as $child)
 {
 
-    $tempZip = $child->ExtendedData->SchemaData->SimpleData[0];
-    $tempCoords =  $child->Polygon->outerBoundaryIs->LinearRing->coordinates;
+    //$tempZip = $child->ExtendedData->SchemaData->SimpleData[0];
+    //$tempCoords =  $child->Polygon->outerBoundaryIs->LinearRing->coordinates;
+    
+    //echo '<pre>' . var_export($child, true) . '</pre>';
+    echo $child->ExtendedData->SchemaData->SimpleData[0] .'<br>';
+    if ($child->MultiGeometry){
+        $i = 0;
+        foreach($child->MultiGeometry->Polygon as $multi){
+            echo $child->MultiGeometry->Polygon[$i]->outerBoundaryIs->LinearRing->coordinates .'<br>'.'<br>';
+            $i++;
+        } 
+        //echo $child->MultiGeometry->Polygon[0]->outerBoundaryIs->LinearRing->coordinates .'<br>';
+    }
+    else{
+        echo  $child->Polygon->outerBoundaryIs->LinearRing->coordinates .'<br>';
+    }
 
-    insert_into_USZipCodeData($conn, $tempZip, $tempCoords);
+    //echo $child->ExtendedData->SchemaData->SimpleData[0] .'<br>';
+    //echo  $child->Polygon->outerBoundaryIs->LinearRing->coordinates .'<br>';
+
+
+    //insert_into_USZipCodeData($conn, $tempZip, $tempCoords);
+
+
 }
 
 //END XML STUFF///////////////////////////////////
