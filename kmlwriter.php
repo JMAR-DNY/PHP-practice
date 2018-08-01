@@ -15,9 +15,9 @@ $doc->openURI('writer_test.kml');
 $doc->setIndent(true);
 $doc->startDocument('1.0','UTF-8');
 $doc->startElement('kml');
+$doc->writeAttribute('xmlns', "http://www.opengis.net/kml/2.2");
 
-
-$doc->startElement('Folder');
+$doc->startElement('Document');
 
 foreach ($stmt as $row) { 
     $doc->startElement('Placemark');
@@ -27,7 +27,24 @@ foreach ($stmt as $row) {
     //$doc->writeAttribute('name', 'Zip');
     $doc->text($row['ZipCode']);
     $doc->endElement();
+<![CDATA[<center><table><tr bgcolor="#E3E3F3">
+<th>Count</th>
+<td>1738</td>
+</tr><tr bgcolor="">
+<th>Zip</th>
+<td>33508</td>
+</tr><tr bgcolor="#E3E3F3">
+<th>City</th>
+<td>Brandon</td>
+</tr></table></center>]]>
+
+
 */
+$doc->startElement('Description');
+$doc->text("test");
+$doc->endElement();
+
+
     $doc->startElement('ExtendedData');
         $doc->startElement('data');
             $doc->writeAttribute('name', 'Zip');
@@ -84,7 +101,7 @@ foreach ($stmt as $row) {
     $doc->endElement(); // Placemark
 }//END placemark
     
-    $doc->endElement(); // Folder
+    $doc->endElement(); // End Document
 
 $doc->endElement(); // kml
 echo $doc->flush();
