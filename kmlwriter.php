@@ -19,69 +19,32 @@ $doc->writeAttribute('xmlns', "http://www.opengis.net/kml/2.2");
 
 $doc->startElement('Document');
 
+//insert styles here
+
+
+
+//Generates each placemark
 foreach ($stmt as $row) { 
     $doc->startElement('Placemark');
 
-    /*
-    $doc->startElement('name');
-    //$doc->writeAttribute('name', 'Zip');
-    $doc->text($row['ZipCode']);
-    $doc->endElement();
-<![CDATA[<center><table><tr bgcolor="#E3E3F3">
+$doc->startElement('Description');
+$doc->writeCData('<center><table><tr bgcolor="#E3E3F3">
 <th>Count</th>
-<td>1738</td>
+<td>'.($row['data']).'</td>
 </tr><tr bgcolor="">
 <th>Zip</th>
-<td>33508</td>
+<td>'.($row['ZipCode']).'</td>
 </tr><tr bgcolor="#E3E3F3">
 <th>City</th>
-<td>Brandon</td>
-</tr></table></center>]]>
-
-
-*/
-$doc->startElement('Description');
-$doc->text("test");
+<td>'.($row['City']).'</td>
+</tr></table></center>');
 $doc->endElement();
 
+//sets the gradient
+$doc->startElement('styleUrl');
+$doc->text('#gradient'.$row['gradient']);
+$doc->endElement();
 
-    $doc->startElement('ExtendedData');
-        $doc->startElement('data');
-            $doc->writeAttribute('name', 'Zip');
-                $doc->startElement('value');         
-                    $doc->text($row['ZipCode']);
-                $doc->endElement(); 
-        $doc->endElement();
-        
-        $doc->startElement('data');
-        $doc->writeAttribute('name', 'city');
-                $doc->startElement('value');         
-                    $doc->text($row['City']);
-                $doc->endElement(); 
-        $doc->endElement();
-
-        $doc->startElement('data');
-            $doc->writeAttribute('name', 'ProgramID');
-                $doc->startElement('value');         
-                    $doc->text($row['ProgramID']);
-                $doc->endElement(); 
-        $doc->endElement();
-
-        $doc->startElement('data');
-            $doc->writeAttribute('name', 'count');
-                $doc->startElement('value');         
-                    $doc->text($row['data']);
-                $doc->endElement(); 
-        $doc->endElement();
-
-        $doc->startElement('data');
-            $doc->writeAttribute('name', 'gradient');
-                $doc->startElement('value');         
-                    $doc->text($row['gradient']);
-                $doc->endElement(); 
-        $doc->endElement();
-
-    $doc->endElement();
 
     $doc->startElement('Polygon');
         $doc->startElement('tesselate');
