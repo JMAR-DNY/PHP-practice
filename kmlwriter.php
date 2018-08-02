@@ -15,7 +15,7 @@ $doc->openURI('writer_test.kml');
 $doc->setIndent(true);
 $doc->startDocument('1.0','UTF-8');
 $doc->startElement('kml');
-$doc->writeAttribute('xmlns', "http://www.opengis.net/kml/2.2");
+$doc->writeAttribute('xmlns:gx', "http://www.google.com/kml/ext/2.2");
 
 $doc->startElement('Document');
 
@@ -45,7 +45,8 @@ $doc->writeAttribute('id', 'gradient1');
             $doc->endElement();//end fill
             $doc->startElement('outline');
                 $doc->text(1);
-            $doc->endElement();//end outline
+            $doc->endElement();//end tesselate
+
         $doc->endElement();//end PolyStyle
 $doc->endElement();//ends gradient1
 
@@ -158,12 +159,16 @@ $doc->endElement();
 
 
     $doc->startElement('Polygon');
-        $doc->startElement('tesselate');
+
+        $doc->startElement('extrude');
         $doc->text(1);
-        $doc->endElement();
+        $doc->endElement();//end altitudeMode
+        $doc->startElement('altitudeMode');
+        $doc->text("clampToGround");
+        $doc->endElement();//end altitudeMode
+
         $doc->startElement('outerBoundaryIs');
-            $doc->startElement('LinearRing');
-            
+            $doc->startElement('LinearRing');           
                     $doc->startElement('coordinates');
                         $doc->text($row['Coordinates']);
                     $doc->endElement(); // coordinates
